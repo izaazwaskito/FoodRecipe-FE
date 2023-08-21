@@ -55,12 +55,12 @@ const Home = () => {
             showsHorizontalScrollIndicator={false}
           >
             <Image
-              source={require("../../assets/sandwich.jpg")}
+              source={require("../../assets/salad.jpg")}
               style={styles.image}
               alt="preview"
             />
             <Image
-              source={require("../../assets/sandwich.jpg")}
+              source={require("../../assets/pancake.jpg")}
               style={styles.image}
               alt="preview"
             />
@@ -133,11 +133,13 @@ const Home = () => {
             <View style={styles.card} mr={5}>
               <Image
                 style={styles.cardImage}
-                source={require("../../assets/sandwich.jpg")}
+                source={require("../../assets/steak.jpg")}
                 alt="image"
               />
               <View style={styles.textContainer}>
-                <Text style={{ paddingLeft: 15, paddingTop: 5 }}>Sandwich</Text>
+                <Text style={{ paddingLeft: 15, paddingTop: 5 }}>
+                  Beef Steak
+                </Text>
                 <Text style={{ paddingLeft: 15 }} fontSize={9}>
                   Beef steak with nopales, tartare ....
                 </Text>
@@ -146,13 +148,15 @@ const Home = () => {
             <View style={styles.card} mr={5}>
               <Image
                 style={styles.cardImage}
-                source={require("../../assets/sandwich.jpg")}
+                source={require("../../assets/spaghetti.jpg")}
                 alt="image"
               />
               <View style={styles.textContainer}>
-                <Text style={{ paddingLeft: 15, paddingTop: 5 }}>Sandwich</Text>
+                <Text style={{ paddingLeft: 15, paddingTop: 5 }}>
+                  Spaghetti
+                </Text>
                 <Text style={{ paddingLeft: 15 }} fontSize={9}>
-                  Beef steak with nopales, tartare ....
+                  Crbonara sauce with grilled ...
                 </Text>
               </View>
             </View>
@@ -183,17 +187,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: 260,
     height: 158,
-    resizeMode: "contain",
+    resizeMode: "cover",
     marginRight: 20,
   },
   card: {
-    width: 180,
+    width: 200,
     height: 140,
     backgroundColor: "#FFFFFF",
     borderRadius: 4,
   },
   cardImage: {
     width: "100%",
+    resizeMode: "cover",
     height: "70%",
   },
 });

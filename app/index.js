@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 import LoginScreen from "./auth/MainAuth";
 import HomeScreen from "./MainContainer";
-
 export default function Page() {
   return (
     <NavigationContainer independent={true}>

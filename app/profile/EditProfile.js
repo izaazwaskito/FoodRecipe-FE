@@ -20,13 +20,23 @@ import {
 import axios from "axios";
 
 const EditProfile = ({ navigation }) => {
-  const [userLogin, setUserLogin] = useState();
-  const [data, setData] = useState([]);
+  const [newPassword, setNewPassword] = useState();
+  const [newConfirmPassword, setNewConfirmPassword] = useState();
 
-  //   useEffect(() => {
-
-  //   }, []);
-
+  const updatePasswordUser = async () => {
+    const dataUser = await AsyncStorage.getItem("users_id");
+    axios
+      .put(`http://192.168.1.8:7474/users/password/${dataUser}`, {
+        users_password: newPassword,
+        users_confirmpassword: newConfirmPassword,
+      })
+      .then((response) => {
+        console.log(response.data);
+        setNewPassword("");
+        setNewConfirmPassword("");
+      })
+      .catch((error) => console.log(error));
+  };
   return (
     <NativeBaseProvider>
       <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -49,6 +59,8 @@ const EditProfile = ({ navigation }) => {
             placeholder="New Password"
             backgroundColor={"#F5F5F5"}
             borderColor={"#F5F5F5"}
+            value={newPassword}
+            onChangeText={(value) => setNewPassword(value)}
           />
           <Text style={{ marginTop: 10 }}>Confirm New Password</Text>
           <Input
@@ -56,8 +68,16 @@ const EditProfile = ({ navigation }) => {
             placeholder="New Password"
             backgroundColor={"#F5F5F5"}
             borderColor={"#F5F5F5"}
+            value={newConfirmPassword}
+            onChangeText={(value) => setNewConfirmPassword(value)}
           />
-          <Button backgroundColor={"#EEC302"}>Change Password</Button>
+          <Button
+            backgroundColor={"#EEC302"}
+            mt={5}
+            onPress={updatePasswordUser}
+          >
+            Change Password
+          </Button>
         </View>
       </View>
     </NativeBaseProvider>

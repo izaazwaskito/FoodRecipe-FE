@@ -20,6 +20,7 @@ import {
   StyleSheet,
   useWindowDimensions,
   Pressable,
+  Alert,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import axios from "axios";
@@ -42,14 +43,14 @@ const Home = () => {
   const getData = async () => {
     const dataUser = await AsyncStorage.getItem("users_id");
     await axios
-      .get(`http://192.168.1.6:7474/recipes/users/${dataUser}`)
+      .get(`http://192.168.1.8:7474/recipes/users/${dataUser}`)
       .then((response) => {
         setData(response.data.data);
       })
       .catch((error) => console.log(error));
   };
   const handleDelete = (recipes_id) => {
-    // axios.delete(`http://192.168.1.6:7474/recipes/${recipes_id}`).then(() => {
+    // axios.delete(`http://192.168.1.8:7474/recipes/${recipes_id}`).then(() => {
     //   alert("Recipe Delete");
     dispatch(deleteRecipeActions(recipes_id));
     getData();
@@ -61,51 +62,79 @@ const Home = () => {
           data={data}
           style={{ marginTop: 60 }}
           renderItem={({ item }) => (
-            <View mt={10}>
-              <HStack>
-                <Image
-                  // source={{ uri: item.recipes_photo }}
-                  source={
-                    item.recipes_photo === "null" ||
-                    item.recipes_photo === null ||
-                    item.recipes_photo === ""
-                      ? require("../../assets/noimage.png")
-                      : { uri: item.recipes_photo }
-                  }
-                  style={styles.image}
-                  alt="image"
-                />
-                <VStack paddingTop={1}>
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: 18,
-                    }}
-                  >
-                    {item.recipes_title}
-                  </Text>
-                  <Text style={{ fontSize: 14 }}>Food</Text>
-                  <Text style={{ fontWeight: "bold" }}></Text>
-                  <HStack>
-                    <UpdateModal
-                      recipes_title={item.recipes_title}
-                      recipes_id={item.recipes_id}
-                      recipes_video={item.recipes_video}
-                      recipes_photo={item.recipes_photo}
-                      recipes_ingredients={item.recipes_ingredients}
-                      getData={getData}
-                    />
-
-                    <Button
-                      style={{ width: 50, backgroundColor: "red" }}
-                      onPress={() => handleDelete(item.recipes_id)}
-                      ml={3}
+            <View
+              mt={7}
+              backgroundColor={"white"}
+              width={SIZE}
+              borderRadius={10}
+            >
+              <View padding={3}>
+                <HStack>
+                  <Image
+                    // source={{ uri: item.recipes_photo }}
+                    source={
+                      item.recipes_photo === "null" ||
+                      item.recipes_photo === null ||
+                      item.recipes_photo === ""
+                        ? require("../../assets/noimage.png")
+                        : { uri: item.recipes_photo }
+                    }
+                    style={styles.image}
+                    alt="image"
+                  />
+                  <VStack paddingTop={1}>
+                    <Text
+                      style={{
+                        fontWeight: 500,
+                        fontSize: 18,
+                      }}
                     >
-                      <FeatherIcon name="trash-2" size={20} color={"white"} />
-                    </Button>
-                  </HStack>
-                </VStack>
-              </HStack>
+                      {item.recipes_title}
+                    </Text>
+                    <Text style={{ fontSize: 14 }}>Food</Text>
+                    <Text style={{ fontWeight: 500 }}></Text>
+                    <HStack>
+                      <UpdateModal
+                        recipes_title={item.recipes_title}
+                        recipes_id={item.recipes_id}
+                        recipes_video={item.recipes_video}
+                        recipes_photo={item.recipes_photo}
+                        recipes_ingredients={item.recipes_ingredients}
+                        getData={getData}
+                      />
+
+                      <Button
+                        style={{ width: 50, backgroundColor: "#D71313" }}
+                        onPress={() => {
+                          Alert.alert(
+                            "Delete",
+                            "Are you sure you want to delete ?",
+                            [
+                              {
+                                text: "Cancel",
+                                style: "cancel",
+                              },
+                              {
+                                text: "Ok",
+                                onPress: () => {
+                                  handleDelete(item.recipes_id);
+                                },
+                                style: "cancel",
+                              },
+                            ],
+                            {
+                              cancelable: true,
+                            }
+                          );
+                        }}
+                        ml={3}
+                      >
+                        <FeatherIcon name="trash-2" size={20} color={"white"} />
+                      </Button>
+                    </HStack>
+                  </VStack>
+                </HStack>
+              </View>
             </View>
           )}
         />
@@ -118,7 +147,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     aspectRatio: 1,
-    borderRadius: 20,
+    borderRadius: 10,
     width: 110,
     height: 110,
     marginRight: 20,
@@ -138,7 +167,7 @@ const styles = StyleSheet.create({
 export default () => {
   return (
     <NativeBaseProvider>
-      <View mt={6} flex={1} px="3">
+      <View mt={6} flex={1} px="3" backgroundColor={"white"}>
         <Home />
       </View>
     </NativeBaseProvider>

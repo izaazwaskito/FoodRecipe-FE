@@ -12,8 +12,11 @@ import {
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { Link, useNavigation } from "expo-router";
 import axios, { Axios } from "axios";
+import { useDispatch } from "react-redux";
+import { registerActions } from "../config/redux/actions/userActions";
 
 const Register = () => {
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -22,37 +25,30 @@ const Register = () => {
   const navigation = useNavigation();
 
   const register = () => {
-    const data = {
-      users_name: name,
-      users_email: email,
-      users_phone: phone,
-      users_password: password,
-      users_confirmpassword: confirmpassword,
-    };
-    axios.post("http://192.168.1.6:7474/users/register", data).then((res) => {
-      setName("");
-      setEmail("");
-      setPhone("");
-      setPassword("");
-      setConfirmPassword("");
-      navigation.navigate("LoginFirst");
-      if (res.data[0].message === '"users_name" is not allowed to be empty') {
-        alert("Name must be filled out!");
-      } else if (
-        res.data[0].message === '"users_phone" is not allowed to be empty'
-      ) {
-        alert("Phone must be filled out! / character must 8-12 ");
-      } else if (
-        res.data[0].message === '"users_password" is not allowed to be empty'
-      ) {
-        alert("Password must be filled out!");
-      } else if (
-        res.data[0].message ===
-        '"users_confirmpassword" must be [ref:users_password]'
-      ) {
-        alert("Password must be confirmed");
-      }
-    });
+    dispatch(registerActions(name, email, phone, password, confirmpassword));
+    navigation.navigate("LoginFirst");
+    setName("");
+    setEmail("");
+    setPhone("");
+    setPassword("");
+    setConfirmPassword("");
+
+    // if (res.data[0].message === '"users_name" is not allowed to be empty') {
+    //   alert("Name must be filled out!");
+    // } else if (
+    //   res.data[0].message === '"users_phone" is not allowed to be empty'
+    // ) {
+    //   alert("Phone must be filled out! / character must 8-12 ");
+    // } else if (
+    //   res.data[0].message === '"users_password" is not allowed to be empty'
+    // ) {
+    //   alert("Password must be filled out!");
+    // } else if (
+    //   res.data[0].message ===
+    //   '"users_confirmpassword" must be [ref:users_password]'
+    // ) {
+    //   alert("Password must be confirmed");
+    // }
   };
 
   return (

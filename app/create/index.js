@@ -39,6 +39,11 @@ const Register = () => {
   };
   const createRecipe = () => {
     dispatch(createRecipeActions(title, description, video, image, userLogin));
+    setTitle("");
+    setDescription("");
+    setVideo("");
+    setPicture("");
+    setUserId("");
   };
 
   const pickImage = async () => {

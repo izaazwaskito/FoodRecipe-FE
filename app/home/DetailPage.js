@@ -2,6 +2,7 @@ import {
   LogBox,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
@@ -29,14 +30,31 @@ import {
 import { Link } from "expo-router";
 import axios from "axios";
 import { ImageBackground } from "react-native";
+import { useIsFocused, useRoute } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { createSavedActions } from "../config/redux/actions/savedActions";
+import { createLikeActions } from "../config/redux/actions/likeActions";
+import {
+  createCommentActions,
+  getUserCommentActions,
+} from "../config/redux/actions/commentActions";
 
-const DetailPage = ({ route }) => {
+const DetailPage = () => {
   const { width } = useWindowDimensions();
+  const navigation = useNavigation();
+  const route = useRoute();
   const SIZE = width * 0.94;
+  const dispatch = useDispatch();
   const { id } = route.params;
-  const [comment, setComment] = useState([]);
+  const [commentText, setCommentText] = useState("");
   const [data, setData] = useState([]);
+  const isFocuesd = useIsFocused();
   const [dataComments, setDataComments] = useState([]);
+  const [activeTab, setActiveTab] = useState("Ingredients");
+  const { comment } = useSelector((state) => state.comment);
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
   useEffect(() => {
     getData();
     getComment();
@@ -45,7 +63,7 @@ const DetailPage = ({ route }) => {
 
   const getData = async () => {
     await axios
-      .get(`http://192.168.1.6:7474/recipes/${id}`)
+      .get(`http://192.168.1.8:7474/recipes/${id}`)
       .then((response) => {
         setData(response.data.data[0]);
       })
@@ -53,60 +71,24 @@ const DetailPage = ({ route }) => {
   };
 
   const getComment = async () => {
-    await axios
-      .get(`http://192.168.1.6:7474/comments/${id}`)
-      .then((response) => {
-        setDataComments(response.data.data);
-      });
+    dispatch(getUserCommentActions(id));
   };
 
   const handleLike = async () => {
     const dataUser = await AsyncStorage.getItem("users_id");
-    const data = {
-      recipes_id: id,
-      users_id: dataUser,
-    };
-    console.log(data);
-    axios.post("http://192.168.1.6:7474/likeds", data).then((res) => {
-      if (res.data.statusCode === 201) {
-        alert("Like Recipe Success");
-      } else if (res.data.message === "Like Already") {
-        alert("Liked Already");
-      }
-    });
+    dispatch(createLikeActions(id, dataUser));
   };
 
   const handleBookmarks = async () => {
     const dataUser = await AsyncStorage.getItem("users_id");
-    const data = {
-      recipes_id: id,
-      users_id: dataUser,
-    };
-
-    axios.post("http://192.168.1.6:7474/bookmarks", data).then((res) => {
-      if (res.data.statusCode === 201) {
-        alert("Bookmark Recipe Success");
-      } else if (res.data.message === "Bookmarks Already") {
-        alert("Bookmark Already");
-      }
-    });
+    dispatch(createSavedActions(id, dataUser));
   };
 
   const handleComments = async () => {
     const dataUser = await AsyncStorage.getItem("users_id");
-    const data = {
-      recipes_id: id,
-      comment_text: comment,
-      users_id: dataUser,
-    };
-    console.log(data);
-
-    axios.post("http://192.168.1.6:7474/comments", data).then((res) => {
-      if (res.data.statusCode === 201) {
-        alert("Comment Recipe Success");
-        getComment();
-      }
-    });
+    dispatch(createCommentActions(id, dataUser, commentText));
+    setCommentText("");
+    getComment();
   };
   return (
     <NativeBaseProvider>
@@ -179,68 +161,200 @@ const DetailPage = ({ route }) => {
           paddingRight: 20,
         }}
       >
-        <Text style={{ fontWeight: "bold", fontSize: 18 }}>Ingredients</Text>
-        <ScrollView
-          nestedScrollEnabled={true}
-          showsVerticalScrollIndicator={false}
-        >
-          <View
-            style={{
-              backgroundColor: "#FAF7ED",
-              marginTop: 20,
-              borderRadius: 15,
-            }}
+        <HStack space={5}>
+          <TouchableOpacity onPress={() => handleTabChange("Ingredients")}>
+            <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+              Ingredients
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleTabChange("StepVideo")}>
+            <Text style={{ fontWeight: "bold", fontSize: 16 }}>Video Step</Text>
+          </TouchableOpacity>
+        </HStack>
+        {activeTab === "Ingredients" && (
+          <ScrollView
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={false}
           >
-            <Text style={{ padding: 20 }}>{data.recipes_ingredients}</Text>
-          </View>
-          <View>
-            <TextArea
-              h={20}
-              mt={5}
-              placeholder="Comments:"
-              backgroundColor={"#FAF7ED"}
-              borderColor={"#FAF7ED"}
-              value={comment}
-              onChangeText={(value) => setComment(value)}
-            />
-          </View>
-          <Button
-            mt={4}
-            onPress={handleComments}
-            borderRadius={10}
-            backgroundColor={"#EFC81A"}
+            <View
+              style={{
+                backgroundColor: "#FAF7ED",
+                marginTop: 20,
+                borderRadius: 15,
+              }}
+            >
+              <Text style={{ padding: 20 }}>{data.recipes_ingredients}</Text>
+            </View>
+          </ScrollView>
+        )}
+        {activeTab === "StepVideo" && (
+          <ScrollView
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={false}
           >
-            Post
-          </Button>
-
-          <View style={{ marginTop: 15 }}>
-            <Text>Comment:</Text>
-            <FlatList
-              data={dataComments}
-              renderItem={({ item }) => (
-                <View>
-                  <HStack>
-                    <Image
-                      source={require("../../assets/user.png")}
-                      width={10}
-                      height={10}
-                      alt="user"
-                      mt={3}
+            <View style={{ marginTop: 20 }}>
+              <View
+                style={{
+                  backgroundColor: "#FAF7ED",
+                  height: 70,
+                }}
+              >
+                <HStack>
+                  <View
+                    style={{
+                      backgroundColor: "#EFC81A",
+                      width: 50,
+                      height: 50,
+                      margin: 10,
+                      borderRadius: 10,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <FeatherIcon
+                      name="play"
+                      size={26}
+                      color={"white"}
+                      onPress={() => {
+                        navigation.navigate("DetailVideo", {
+                          id: data.recipes_id,
+                        });
+                      }}
                     />
-                    <VStack>
-                      <Text style={{ paddingTop: 12, paddingLeft: 20 }}>
-                        {item.users_name}
-                      </Text>
-                      <Text style={{ paddingLeft: 20 }}>
-                        {item.comment_text}
-                      </Text>
-                    </VStack>
-                  </HStack>
-                </View>
-              )}
-            />
-          </View>
-        </ScrollView>
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 17,
+                      marginTop: 20,
+                      fontWeight: 500,
+                      color: "#666666",
+                    }}
+                    onPress={() => {
+                      navigation.navigate("DetailVideo", {
+                        id: id,
+                      });
+                    }}
+                  >
+                    Step 1
+                  </Text>
+                </HStack>
+              </View>
+              <View
+                style={{
+                  backgroundColor: "#FAF7ED",
+                  height: 70,
+                  marginTop: 20,
+                }}
+              >
+                <HStack>
+                  <View
+                    style={{
+                      backgroundColor: "#EFC81A",
+                      width: 50,
+                      height: 50,
+                      margin: 10,
+                      borderRadius: 10,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <FeatherIcon name="play" size={26} color={"white"} />
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 17,
+                      marginTop: 20,
+                      fontWeight: 500,
+                      color: "#666666",
+                    }}
+                  >
+                    Step 2
+                  </Text>
+                </HStack>
+              </View>
+              <View
+                style={{
+                  backgroundColor: "#FAF7ED",
+                  height: 70,
+                  marginTop: 20,
+                }}
+              >
+                <HStack>
+                  <View
+                    style={{
+                      backgroundColor: "#EFC81A",
+                      width: 50,
+                      height: 50,
+                      margin: 10,
+                      borderRadius: 10,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <FeatherIcon name="play" size={26} color={"white"} />
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 17,
+                      marginTop: 20,
+                      fontWeight: 500,
+                      color: "#666666",
+                    }}
+                  >
+                    Step 3
+                  </Text>
+                </HStack>
+              </View>
+            </View>
+            <View>
+              <TextArea
+                h={20}
+                mt={5}
+                placeholder="Comments:"
+                backgroundColor={"#FAF7ED"}
+                borderColor={"#FAF7ED"}
+                value={commentText}
+                onChangeText={(value) => setCommentText(value)}
+              />
+            </View>
+            <Button
+              mt={4}
+              onPress={handleComments}
+              borderRadius={10}
+              backgroundColor={"#EFC81A"}
+            >
+              Post
+            </Button>
+
+            <View style={{ marginTop: 15 }}>
+              <Text>Comment:</Text>
+              <FlatList
+                data={comment}
+                renderItem={({ item }) => (
+                  <View>
+                    <HStack>
+                      <Image
+                        source={require("../../assets/user.png")}
+                        width={10}
+                        height={10}
+                        alt="user"
+                        mt={3}
+                      />
+                      <VStack>
+                        <Text style={{ paddingTop: 12, paddingLeft: 20 }}>
+                          {item.users_name}
+                        </Text>
+                        <Text style={{ paddingLeft: 20 }}>
+                          {item.comment_text}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  </View>
+                )}
+              />
+            </View>
+          </ScrollView>
+        )}
       </View>
     </NativeBaseProvider>
   );

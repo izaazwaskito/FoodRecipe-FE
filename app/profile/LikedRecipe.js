@@ -24,12 +24,19 @@ import {
 import FeatherIcon from "react-native-vector-icons/Feather";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteLikeActions,
+  getUserLikeActions,
+} from "../config/redux/actions/likeActions";
 
 const Home = () => {
   const { width } = useWindowDimensions();
   const SIZE = width * 0.94;
   const [data, setData] = useState([]);
+  const dispatch = useDispatch();
   const [userLogin, setUserLogin] = useState();
+  const { like } = useSelector((state) => state.like);
 
   useEffect(() => {
     getData();
@@ -37,74 +44,65 @@ const Home = () => {
 
   const getData = async () => {
     const dataUser = await AsyncStorage.getItem("users_id");
-    await axios
-      .get(`http://192.168.1.6:7474/likeds/users/${dataUser}`)
-      .then((response) => {
-        setData(response.data.data);
-      })
-      .catch((error) => console.log(error));
+    dispatch(getUserLikeActions(dataUser));
   };
   const handleDelete = (likeds_id) => {
-    axios.delete(`http://192.168.1.6:7474/likeds/${likeds_id}`).then(() => {
-      alert("Recipe Delete");
-      getData();
-    });
+    dispatch(deleteLikeActions(likeds_id));
+    getData();
   };
   return (
     <View>
       <Container maxWidth={SIZE}>
-        {/* <View>
-          <HStack paddingBottom={7}>
-            <Image
-              source={require("../../assets/sandwich.jpg")}
-              style={styles.image}
-            />
-            <VStack paddingTop={5}>
-              <Text style={{ fontWeight: "bold", fontSize: 18 }}>Sandwich</Text>
-              <Text style={{ fontSize: 14 }}>In Veg Pizza</Text>
-              <Text style={{ fontWeight: "bold" }}>Spicy</Text>
-            </VStack>
-          </HStack>
-        </View> */}
         <FlatList
-          data={data}
+          data={like}
           style={{ marginTop: 60 }}
           renderItem={({ item }) => (
-            <View mt={10}>
-              <HStack>
-                <Image
-                  // source={{ uri: item.recipes_photo }}
-                  source={
-                    item.recipes_photo === "null" ||
-                    item.recipes_photo === null ||
-                    item.recipes_photo === ""
-                      ? require("../../assets/noimage.png")
-                      : { uri: item.recipes_photo }
-                  }
-                  style={styles.image}
-                  alt="image"
-                />
-                <VStack paddingTop={1}>
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: 18,
-                    }}
-                  >
-                    {item.recipes_title}
-                  </Text>
-                  <Text style={{ fontSize: 14 }}>Food</Text>
-                  <Text style={{ fontWeight: "bold" }}></Text>
-                  <HStack>
-                    <Button
-                      style={{ width: 50, backgroundColor: "red" }}
-                      onPress={() => handleDelete(item.likeds_id)}
+            <View
+              mt={7}
+              backgroundColor={"white"}
+              width={SIZE}
+              borderRadius={10}
+            >
+              <View padding={3}>
+                <HStack>
+                  <Image
+                    // source={{ uri: item.recipes_photo }}
+                    source={
+                      item.recipes_photo === "null" ||
+                      item.recipes_photo === null ||
+                      item.recipes_photo === ""
+                        ? require("../../assets/noimage.png")
+                        : { uri: item.recipes_photo }
+                    }
+                    style={styles.image}
+                    alt="image"
+                  />
+                  <VStack paddingTop={1}>
+                    <Text
+                      style={{
+                        fontWeight: 500,
+                        fontSize: 18,
+                      }}
                     >
-                      <FeatherIcon name="thumbs-up" size={20} color={"white"} />
-                    </Button>
-                  </HStack>
-                </VStack>
-              </HStack>
+                      {item.recipes_title}
+                    </Text>
+                    <Text style={{ fontSize: 14 }}>Food</Text>
+                    <Text style={{ fontWeight: 500 }}></Text>
+                    <HStack>
+                      <Button
+                        style={{ width: 50, backgroundColor: "red" }}
+                        onPress={() => handleDelete(item.likeds_id)}
+                      >
+                        <FeatherIcon
+                          name="thumbs-up"
+                          size={20}
+                          color={"white"}
+                        />
+                      </Button>
+                    </HStack>
+                  </VStack>
+                </HStack>
+              </View>
             </View>
           )}
         />
@@ -117,7 +115,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     aspectRatio: 1,
-    borderRadius: 20,
+    borderRadius: 10,
     width: 110,
     height: 110,
     resizeMode: "contain",
@@ -138,7 +136,7 @@ const styles = StyleSheet.create({
 export default () => {
   return (
     <NativeBaseProvider>
-      <View mt={6} flex={1} px="3">
+      <View mt={6} flex={1} px="3" backgroundColor={"white"}>
         <Home />
       </View>
     </NativeBaseProvider>

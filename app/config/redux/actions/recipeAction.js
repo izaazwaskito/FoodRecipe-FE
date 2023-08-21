@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getAllRecipe = () => async (dispatch) => {
   try {
-    const recipes = await axios.get(`http://192.168.1.6:7474/recipes/`);
+    const recipes = await axios.get(`http://192.168.1.8:7474/recipes/`);
     const result = recipes.data.data;
     dispatch({ type: "GET_ALL_RECIPE", payload: result });
   } catch (err) {
@@ -26,7 +26,7 @@ export const createRecipeActions =
         });
       }
       const recipes = await axios.post(
-        "http://192.168.1.6:7474/recipes/",
+        "http://192.168.1.8:7474/recipes/",
         formData,
         {
           headers: {
@@ -61,7 +61,7 @@ export const updateRecipeActions =
         });
       }
       const recipes = await axios.put(
-        `http://192.168.1.6:7474/recipes/${recipes_id}`,
+        `http://192.168.1.8:7474/recipes/${recipes_id}`,
         formData,
         {
           headers: {
@@ -81,28 +81,10 @@ export const updateRecipeActions =
     }
   };
 
-// export const updateRecipeActions =
-//   (data, setModalVisible, recipes_id) => async (dispatch) => {
-//     try {
-//       const recipes = await axios.put(
-//         `http://192.168.1.6:7474/recipes/${recipes_id}``http://192.168.1.6:7474/recipes/${recipes_id}`,
-//         data
-//       );
-//       if (recipes.data.statusCode === 200) {
-//         setModalVisible(false);
-//         alert("Update Recipe Success");
-//       }
-//       const result = recipes.data.data;
-//       dispatch({ type: "UPDATE_RECIPE", payload: result });
-//     } catch (err) {
-//       console.error(err.message);
-//     }
-//   };
-
 export const deleteRecipeActions = (recipes_id) => async (dispatch) => {
   try {
     const recipes = await axios.delete(
-      `http://192.168.1.6:7474/recipes/${recipes_id}`
+      `http://192.168.1.8:7474/recipes/${recipes_id}`
     );
 
     alert("Delete Recipe Success");

@@ -22,6 +22,7 @@ import { useNavigation } from "expo-router";
 import { SelectList } from "react-native-dropdown-select-list";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllRecipe } from "../config/redux/actions/recipeAction";
+import { useIsFocused } from "@react-navigation/native";
 
 const Home = () => {
   const { width } = useWindowDimensions();
@@ -34,8 +35,12 @@ const Home = () => {
   const [selected, setSelected] = useState("");
   const { recipe } = useSelector((state) => state.recipe);
 
+  const isFocus = useIsFocused();
+
   useEffect(() => {
-    dispatch(getAllRecipe());
+    if (isFocus) {
+      dispatch(getAllRecipe());
+    }
     setData(recipe);
     setFullData(recipe);
   }, []);

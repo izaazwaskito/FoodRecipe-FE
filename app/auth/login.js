@@ -17,6 +17,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { StackActions } from "@react-navigation/native";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -32,8 +33,7 @@ const Login = () => {
     if (!dataUser) {
       navigation.navigate("Login");
     } else {
-      navigation.navigate("HomeScreenReal");
-      getToken();
+      navigation.dispatch(StackActions.replace("HomeScreenReal"));
     }
   };
 
@@ -43,9 +43,9 @@ const Login = () => {
       users_confirmpassword: confirmpassword,
     };
 
-    axios.post("http://192.168.1.6:7474/users/login", data).then((res) => {
+    axios.post("http://192.168.1.8:7474/users/login", data).then((res) => {
       if (res.status === 201) {
-        navigation.navigate("HomeScreenReal");
+        navigation.dispatch(StackActions.replace("HomeScreenReal"));
         AsyncStorage.setItem("token", res.data.data.token_user);
         AsyncStorage.setItem("users_id", res.data.data.users_id);
       } else if (res.data.message === "Email Wrong") {

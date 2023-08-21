@@ -87,7 +87,7 @@ const UpdateModal = ({
         }}
       >
         <View style={styles.modalView}>
-          <Text fontSize={20}>Update</Text>
+          <Text fontSize={16}>Update recipe</Text>
           <Text mt={3}>Title</Text>
           <Input value={title} onChangeText={(value) => setTitle(value)} />
           <Text mt={3}>Ingredients</Text>
@@ -98,23 +98,32 @@ const UpdateModal = ({
           <Text mt={3}>Url Video</Text>
           <Input value={video} onChangeText={(value) => setVideo(value)} />
           <Text mt={3}>Picture</Text>
-          <Button mt={3} onPress={pickImage} backgroundColor={"transparent"}>
-            <FeatherIcon name="camera" size={20} color={"black"} />
+          <Button mt={3} onPress={pickImage} backgroundColor={"white"}>
+            <Text>Upload Photo</Text>
           </Button>
 
           <HStack mt={3}>
             <Button
-              style={[styles.button, styles.buttonClose]}
+              style={{ backgroundColor: "#337CCF" }}
               onPress={() => setModalVisible(!modalVisible)}
               mr={3}
             >
               Cancel
             </Button>
-            <Button onPress={updateRecipe}>Update</Button>
+            <Button
+              backgroundColor={"#EEC302"}
+              width={150}
+              onPress={updateRecipe}
+            >
+              Update
+            </Button>
           </HStack>
         </View>
       </Modal>
-      <Button style={{ width: 50 }} onPress={() => setModalVisible(true)}>
+      <Button
+        style={{ width: 50, backgroundColor: "#337CCF" }}
+        onPress={() => setModalVisible(true)}
+      >
         <FeatherIcon name="edit" size={20} color={"white"} />
       </Button>
     </View>
@@ -126,7 +135,7 @@ export default UpdateModal;
 const styles = StyleSheet.create({
   modalView: {
     margin: 20,
-    backgroundColor: "#EFEFEF",
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
     // alignItems: "center",

@@ -6,6 +6,7 @@ const Stack = createNativeStackNavigator();
 import HomeScreen from "./index";
 import RecipeScreen from "./MoreRecipe";
 import DetailScreen from "./DetailPage";
+import DetailVideoScreen from "./DetailVideo";
 // import HomeScreen from "../MainContainer";
 
 export default function MainHome() {
@@ -35,6 +36,16 @@ export default function MainHome() {
           options={{
             headerTransparent: true,
             title: "Popular Menu",
+            headerTitleAlign: "center",
+            headerTitleStyle: { color: "#EEC302" },
+          }}
+        />
+        <Stack.Screen
+          name="DetailVideo"
+          component={DetailVideoScreen}
+          options={{
+            headerTransparent: true,
+            title: "Video Step",
             headerTitleAlign: "center",
             headerTitleStyle: { color: "#EEC302" },
           }}
