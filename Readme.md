@@ -19,7 +19,6 @@
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Setup .env](#setup-env)
-- [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [Related Project](#related-project)
 - [Contact](#contact)
